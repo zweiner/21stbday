@@ -59,24 +59,21 @@
         <h2 style="margin-top:0;color:var(--gold);letter-spacing:.3px;">Your private invitation</h2>
         <p>Dress up, give me the most beautiful smile in the whole world, and say yes. This golden ticket admits: <strong>Gia&nbsp;Marie Coronado-Mikkelsen</strong> — guest of honor.</p>
 
-        <!-- Local audio player (place an MP3 named dont_stop_the_party.mp3 in repo root) -->
+        <!-- ZERO-KEY preview: fetch iTunes previewUrl and play it (no API key) -->
         <div class="audio-controls" id="audioControls">
-          <button class="play-btn" id="playBtn" aria-label="Play invitation song">▶️ Play</button>
-          <div class="small" id="audioStatus">No song loaded — add <code>dont_stop_the_party.mp3</code> to the repo root to enable playback.</div>
+          <button class="play-btn" id="playBtn" aria-label="Play preview">▶️ Play Preview</button>
+          <div class="small" id="audioStatus">Preview will stream from Apple/iTunes (30s). If that fails, fallback opens Spotify.</div>
         </div>
-        <audio id="localAudio" preload="metadata">
-          <source src="./dont_stop_the_party.mp3" type="audio/mpeg">
-          <!-- if the browser doesn't support audio or file not present, JS will show fallback -->
-        </audio>
-        <p class="small" style="margin-top:8px">Tip: use a short preview (10–20s) if you don’t want to host the full track. MP3 file name must be <code>dont_stop_the_party.mp3</code>.</p>
+
+        <!-- hidden audio element that will be filled with the previewUrl -->
+        <audio id="previewAudio" preload="none"></audio>
+
       </div>
 
       <div class="card">
         <h2 style="margin-top:0;color:var(--gold);letter-spacing:.3px;">Family Watch</h2>
         <p>Meanwhile, the royal guards are on duty…</p>
         <div class="cats" id="catsWrap">
-          <!-- Use <picture> so browsers pick a web-friendly PNG first; if not present it will attempt HEIC.
-               GitHub Pages will serve the converted PNGs if you use the conversion action below. -->
           <figure class="catcard" id="aspencard" style="background-image: url('./Aspen.png');">
             <figcaption class="bubble">Don’t worry! Mom &amp; Dad will save us.</figcaption>
             <div class="img-fallback" data-for="Aspen">If the cat image is blank, add <code>Aspen.png</code> (or run the conversion action to create it from Aspen.HEIC).</div>
@@ -87,7 +84,7 @@
             <div class="img-fallback" data-for="Cedar">If the cat image is blank, add <code>Cedar.png</code> (or run the conversion action to create it from Cedar.HEIC).</div>
           </figure>
         </div>
-        <p class="small" style="margin-top:10px">If you only have HEIC files, add them (Aspen.HEIC / Cedar.HEIC) and use the workflow `convert-heic.yml` included in the repo to automatically create PNGs on push (instructions below).</p>
+        <p class="small" style="margin-top:10px">If you only have HEIC files, keep Aspen.HEIC / Cedar.HEIC in the repo root and use the conversion workflow to generate PNGs automatically.</p>
       </div>
     </section>
   </main>
@@ -95,61 +92,99 @@
   <footer>Built with love by Zach • <span style="color:var(--gold)">21stbday</span></footer>
 
   <script>
-    // AUDIO: play/pause button with friendly fallback if file missing
-    const audio = document.getElementById('localAudio');
+    // ---------- ZERO-KEY iTunes preview player ----------
+    // We'll use the iTunes Search API (no key) to find the track and get previewUrl.
+    // If it returns a previewUrl we set it on the <audio> element and play.
+    // If anything fails we open the Spotify preview as a fallback.
+
     const playBtn = document.getElementById('playBtn');
     const audioStatus = document.getElementById('audioStatus');
+    const audioEl = document.getElementById('previewAudio');
 
-    async function checkAudioAvailable(){
-      // try to fetch the HEAD of the mp3 to see if it's present (works on GitHub Pages)
-      try{
-        const resp = await fetch('./dont_stop_the_party.mp3', { method: 'HEAD' });
-        if(!resp.ok) throw new Error('not found');
-        audioStatus.textContent = 'Ready — click Play to hear the song';
-        return true;
-      } catch(e){
-        audioStatus.innerHTML = 'No song loaded — add <code>dont_stop_the_party.mp3</code> to the repo root to enable playback.';
-        return false;
+    // track query (you can change this to another artist/title if you want)
+    const queryArtist = 'Pitbull';
+    const queryTitle = "Don't Stop the Party";
+    let loadedPreview = false;
+
+    async function fetchPreviewUrl() {
+      // Use the iTunes Search API with CORS (works cross-origin).
+      // Build a search term: "Pitbull Don't Stop the Party"
+      const term = encodeURIComponent(queryArtist + ' ' + queryTitle);
+      const url = `https://itunes.apple.com/search?term=${term}&entity=song&limit=5`;
+      try {
+        const res = await fetch(url);
+        if(!res.ok) throw new Error('itunes search failed');
+        const data = await res.json();
+        if(data.results && data.results.length > 0) {
+          // heuristics: find the best match (artist + title)
+          const best = data.results.find(r => {
+            const name = (r.trackName || '').toLowerCase();
+            const artist = (r.artistName || '').toLowerCase();
+            return name.includes('dont stop the party'.replace(/'/g,'')) && artist.includes('pitbull');
+          }) || data.results[0];
+          if(best && best.previewUrl){
+            return best.previewUrl;
+          }
+        }
+        throw new Error('no preview found');
+      } catch(err) {
+        console.warn('Preview fetch failed:', err);
+        throw err;
       }
     }
 
-    let audioReady = false;
-    checkAudioAvailable().then(av => audioReady = av);
+    async function loadAndPlayPreview(){
+      audioStatus.textContent = 'Loading preview…';
+      try {
+        const previewUrl = await fetchPreviewUrl();
+        audioEl.src = previewUrl;
+        audioEl.load();
+        // user clicked - allowed to play
+        await audioEl.play();
+        loadedPreview = true;
+        playBtn.textContent = '⏸ Pause';
+        audioStatus.textContent = 'Playing preview (30s).';
+      } catch(err) {
+        audioStatus.textContent = 'Preview unavailable — opening Spotify as fallback.';
+        // open spotify track in new tab (friendly fallback)
+        window.open('https://open.spotify.com/track/4K5mcIMVuPMo3i3nTGT9nP','_blank');
+      }
+    }
 
     playBtn.addEventListener('click', async ()=>{
-      if(!audioReady){
-        // show the spotify preview modal fallback if local mp3 missing
-        if(confirm('No local MP3 found. Would you like to open the Spotify 30s preview in a new tab?')){
-          window.open('https://open.spotify.com/track/4K5mcIMVuPMo3i3nTGT9nP','_blank');
-        }
+      if(!loadedPreview && audioEl.paused){
+        await loadAndPlayPreview();
         return;
       }
-
-      try{
-        if(audio.paused){
-          await audio.play();
+      // if already loaded, toggle play/pause
+      if(!audioEl.src){
+        // safety fallback if preview not loaded yet
+        await loadAndPlayPreview();
+        return;
+      }
+      if(audioEl.paused){
+        try {
+          await audioEl.play();
           playBtn.textContent = '⏸ Pause';
-        } else {
-          audio.pause();
-          playBtn.textContent = '▶️ Play';
+          audioStatus.textContent = 'Playing preview (30s).';
+        } catch(e){
+          audioStatus.textContent = 'Playback blocked — click to open Spotify preview.';
         }
-      } catch(err){
-        // autoplay / user gesture errors
-        alert('Playback failed — try clicking the play button again or check the MP3 file.');
+      } else {
+        audioEl.pause();
+        playBtn.textContent = '▶️ Play Preview';
+        audioStatus.textContent = 'Paused.';
       }
     });
 
-    // IMAGE: if PNG not loaded (browser doesn't support HEIC), show fallback note
-    function detectBackgroundImageLoaded(el, fallbackSelector){
-      // create a test image element with the same url as the style (works if png is present)
+    // image fallback logic: show fallback message if PNG doesn't load
+    function detectBackgroundImageLoaded(el) {
       const bg = getComputedStyle(el).backgroundImage;
-      if(!bg || bg === 'none'){ // some browsers have empty backgroundImage if invalid
-        // show fallback box (already in markup)
+      if(!bg || bg === 'none'){
         const fallback = el.querySelector('.img-fallback');
         if(fallback) fallback.style.display = 'grid';
         return;
       }
-      // extract url("...") value
       const m = bg.match(/url\\((?:')?(?:")?(.+?)(?:")?(?:')?\\)/);
       if(!m){ return; }
       const url = m[1].replace(/(^['"]|['"]$)/g,'');
@@ -162,7 +197,6 @@
         const fallback = el.querySelector('.img-fallback');
         if(fallback) fallback.style.display = 'grid';
       };
-      // try to load the png first (URL usually points to png if present)
       img.src = url;
     }
 
