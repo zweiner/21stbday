@@ -1,208 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Zach's 21st — A Golden Night in Las Vegas</title>
   <style>
-    :root{--gold:#D4AF37;--white:#f8f8fb;}
-    html,body{margin:0;padding:0;background:radial-gradient(1200px 600px at 50% -10%, #1b1e2e 0%, #0a0a0f 60%, #05050a 100%);color:var(--white);font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;}
-    .glitter{position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,.4), transparent), radial-gradient(1.5px 1.5px at 70% 20%, rgba(255,255,255,.35), transparent);opacity:.45;mix-blend-mode:screen}
-    .container{max-width:1100px;margin:0 auto;padding:clamp(16px,3vw,32px)}
-    header{position:relative;text-align:center;padding:64px 16px 40px}
-    .skyline{position:absolute;left:0;right:0;bottom:-1px;height:220px;pointer-events:none;opacity:.5}
-    h1{font-size:clamp(36px,6vw,72px);margin:0;letter-spacing:1px;background:linear-gradient(180deg,#fff8d8 0%,var(--gold) 40%,#8b6c1c 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 2px 20px rgba(212,175,55,.25)}
-    .sub{font-size:clamp(16px,2.2vw,22px);opacity:.9;margin-top:14px}
-    .card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:24px;box-shadow:0 8px 30px rgba(0,0,0,.35);backdrop-filter: blur(6px)}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px;margin-top:26px}
-    .pill{display:inline-block;border-radius:999px;padding:10px 16px;margin:10px 6px 0 6px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
-    .cats{display:flex;gap:22px;flex-wrap:wrap;justify-content:center;margin-top:18px}
-    .catcard{position:relative;width:min(340px,46vw);aspect-ratio:4/5;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.12);box-shadow:0 10px 26px rgba(0,0,0,.4);background:#000 center/cover no-repeat}
-    .bubble{position:absolute;left:12px;top:12px;max-width:70%;background:rgba(255,255,255,.95);color:#111;border-radius:14px;padding:10px 14px;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.3)}
-    .invite{margin:26px 0 8px;line-height:1.6;font-size:clamp(16px,2.1vw,20px)}
-    footer{opacity:.75;text-align:center;margin:40px 0 20px;font-size:14px}
-    .audio-controls{display:flex;gap:12px;align-items:center;margin-top:12px}
-    .play-btn{appearance:none;border:none;border-radius:999px;padding:12px 18px;font-weight:700;cursor:pointer;background:linear-gradient(180deg,#fff2b0,var(--gold));color:#231c08;box-shadow:0 6px 18px rgba(212,175,55,.35)}
-    .small{font-size:13px;opacity:.85}
-    .img-fallback{width:100%;height:100%;display:grid;place-items:center;background:#111;color:#ddd;padding:12px;text-align:center}
+    :root{
+      --gold:#D4AF37;
+      --bg:#0a0a0f;
+      --card:#111423;
+      --accent:#c8a951;
+      --white:#f8f8fb;
+    }
+    html,body{
+      margin:0;
+      padding:0;
+      background:url("LasVegasSkyline.png") center/cover no-repeat fixed;
+      color:var(--white);
+      font-family: "Inter", system-ui, -apple-system, sans-serif;
+      text-align:center;
+    }
+    h1{
+      color:var(--gold);
+      font-size:2.8em;
+      letter-spacing:1px;
+      margin-top:2rem;
+    }
+    .name{
+      font-family:"Brush Script MT", "Lucida Handwriting", cursive;
+      font-size:2.4em;
+      color:var(--gold);
+      margin:0.5em 0;
+    }
+    .card{
+      background:rgba(10,10,15,0.85);
+      border-radius:20px;
+      padding:2rem;
+      margin:2rem auto;
+      max-width:700px;
+      box-shadow:0 0 25px rgba(212,175,55,0.4);
+    }
+    img.cat{
+      width:160px;
+      height:auto;
+      border-radius:12px;
+      margin:1rem;
+      box-shadow:0 0 10px rgba(212,175,55,0.5);
+    }
+    .bubble{
+      background:rgba(255,255,255,0.1);
+      border:1px solid var(--gold);
+      color:var(--white);
+      border-radius:12px;
+      padding:0.5em 1em;
+      display:inline-block;
+      font-size:0.9em;
+      margin-top:0.3em;
+    }
+    button{
+      background:var(--gold);
+      color:var(--bg);
+      border:none;
+      border-radius:40px;
+      font-size:1.1em;
+      padding:0.8em 1.6em;
+      cursor:pointer;
+      transition:transform 0.2s ease, box-shadow 0.2s ease;
+      margin-top:1.5rem;
+    }
+    button:hover{
+      transform:scale(1.05);
+      box-shadow:0 0 15px var(--gold);
+    }
+    footer{
+      font-size:0.85em;
+      color:rgba(255,255,255,0.7);
+      margin-bottom:1.5rem;
+    }
   </style>
 </head>
 <body>
-  <div class="glitter"></div>
+  <h1>❤️ A Golden Night in Las Vegas ❤️</h1>
 
-  <header>
-    <h1>For the most beautiful girl in the world — Gia&nbsp;Marie</h1>
-    <p class="sub">You are formally invited to celebrate Zach's 21st in Las&nbsp;Vegas • Nov&nbsp;15–17</p>
+  <div class="card">
+    <p class="name">Gia Marie</p>
+    <p>The most beautiful girl in the world is invited to celebrate<br>
+       Zach’s 21st birthday in Las Vegas — November 15 – 17<br>
+       at the Mardi Gras Hotel. We'll explore the Strip, see a magic show,<br>
+       and share a wonderful dinner sponsored by Brian & Francie.</p>
 
-    <!-- Vegas Skyline -->
-    <svg class="skyline" viewBox="0 0 1200 220" preserveAspectRatio="none" aria-hidden="true">
-      <defs><linearGradient id="goldGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#EED27A"/><stop offset="50%" stop-color="#D4AF37"/><stop offset="100%" stop-color="#7b5f18"/></linearGradient></defs>
-      <rect width="1200" height="220" fill="url(#goldGrad)" opacity="0.08"/>
-      <path d="M0,200 L80,200 L120,170 L200,170 L220,90 L260,90 L260,200 L320,200 L350,130 L390,130 L390,200 L460,200 L480,80 L500,80 L520,200 L600,200 L620,150 L640,150 L640,200 L720,200 L740,100 L760,100 L780,200 L860,200 L900,160 L950,160 L950,200 L1040,200 L1080,120 L1100,120 L1120,200 L1200,200 L1200,220 L0,220 Z" fill="url(#goldGrad)" opacity="0.22"/>
-    </svg>
-  </header>
+    <div>
+      <img src="Aspen.png" alt="Aspen the cat" class="cat"><br>
+      <div class="bubble">“Don’t worry! Mom and Dad will save us.”</div>
+    </div>
 
-  <main class="container">
-    <section class="card">
-      <p class="invite">
-        Gia Marie, this is a golden, little-black-shirt-with-gold-ring kind of night. Just you and me — the Strip lights, a jaw-drop magic show, and a wonderful dinner made possible by Brian &amp; Francie. We'll be staying at the Mardi&nbsp;Gras Hotel, wandering the Strip hand-in-hand, and celebrating the start of my 21st the only way that feels right: together.
-      </p>
-      <div class="date-place" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:14px;">
-        <span class="pill">📍 Mardi&nbsp;Gras&nbsp;Hotel &amp; Casino</span>
-        <span class="pill">🗓️ Nov&nbsp;15 → Nov&nbsp;17</span>
-        <span class="pill">🎩 Magic show • 🍽️ Grandparents' dinner • ✨ The Strip</span>
-      </div>
-    </section>
+    <div>
+      <img src="Cedar.png" alt="Cedar the cat" class="cat"><br>
+      <div class="bubble">“We’ll hold down the fort!”</div>
+    </div>
 
-    <section class="grid">
-      <div class="card">
-        <h2 style="margin-top:0;color:var(--gold);letter-spacing:.3px;">Your private invitation</h2>
-        <p>Dress up, give me the most beautiful smile in the whole world, and say yes. This golden ticket admits: <strong>Gia&nbsp;Marie Coronado-Mikkelsen</strong> — guest of honor.</p>
+    <button id="playBtn">▶️ Play “Don’t Stop the Party”</button>
 
-        <!-- ZERO-KEY preview: fetch iTunes previewUrl and play it (no API key) -->
-        <div class="audio-controls" id="audioControls">
-          <button class="play-btn" id="playBtn" aria-label="Play preview">▶️ Play Preview</button>
-          <div class="small" id="audioStatus">Preview will stream from Apple/iTunes (30s). If that fails, fallback opens Spotify.</div>
-        </div>
+    <audio id="preview" preload="auto"></audio>
+  </div>
 
-        <!-- hidden audio element that will be filled with the previewUrl -->
-        <audio id="previewAudio" preload="none"></audio>
-
-      </div>
-
-      <div class="card">
-        <h2 style="margin-top:0;color:var(--gold);letter-spacing:.3px;">Family Watch</h2>
-        <p>Meanwhile, the royal guards are on duty…</p>
-        <div class="cats" id="catsWrap">
-          <figure class="catcard" id="aspencard" style="background-image: url('./Aspen.png');">
-            <figcaption class="bubble">Don’t worry! Mom &amp; Dad will save us.</figcaption>
-            <div class="img-fallback" data-for="Aspen">If the cat image is blank, add <code>Aspen.png</code> (or run the conversion action to create it from Aspen.HEIC).</div>
-          </figure>
-
-          <figure class="catcard" id="cedarcard" style="background-image: url('./Cedar.png');">
-            <figcaption class="bubble">My balls are gone!.</figcaption>
-            <div class="img-fallback" data-for="Cedar">If the cat image is blank, add <code>Cedar.png</code> (or run the conversion action to create it from Cedar.HEIC).</div>
-          </figure>
-        </div>
-        <p class="small" style="margin-top:10px">If you only have HEIC files, keep Aspen.HEIC / Cedar.HEIC in the repo root and use the conversion workflow to generate PNGs automatically.</p>
-      </div>
-    </section>
-  </main>
-
-  <footer>Built with love by Zach • <span style="color:var(--gold)">21stbday</span></footer>
+  <footer>Made with love by Zach 💫</footer>
 
   <script>
-    // ---------- ZERO-KEY iTunes preview player ----------
-    // We'll use the iTunes Search API (no key) to find the track and get previewUrl.
-    // If it returns a previewUrl we set it on the <audio> element and play.
-    // If anything fails we open the Spotify preview as a fallback.
+    const btn = document.getElementById("playBtn");
+    const audio = document.getElementById("preview");
+    let playing = false;
 
-    const playBtn = document.getElementById('playBtn');
-    const audioStatus = document.getElementById('audioStatus');
-    const audioEl = document.getElementById('previewAudio');
-
-    // track query (you can change this to another artist/title if you want)
-    const queryArtist = 'Pitbull';
-    const queryTitle = "Don't Stop the Party";
-    let loadedPreview = false;
-
-    async function fetchPreviewUrl() {
-      // Use the iTunes Search API with CORS (works cross-origin).
-      // Build a search term: "Pitbull Don't Stop the Party"
-      const term = encodeURIComponent(queryArtist + ' ' + queryTitle);
-      const url = `https://itunes.apple.com/search?term=${term}&entity=song&limit=5`;
-      try {
-        const res = await fetch(url);
-        if(!res.ok) throw new Error('itunes search failed');
-        const data = await res.json();
-        if(data.results && data.results.length > 0) {
-          // heuristics: find the best match (artist + title)
-          const best = data.results.find(r => {
-            const name = (r.trackName || '').toLowerCase();
-            const artist = (r.artistName || '').toLowerCase();
-            return name.includes('dont stop the party'.replace(/'/g,'')) && artist.includes('pitbull');
-          }) || data.results[0];
-          if(best && best.previewUrl){
-            return best.previewUrl;
-          }
+    // fetch Pitbull preview (30s official iTunes sample)
+    fetch("https://itunes.apple.com/search?term=pitbull+dont+stop+the+party&entity=song&limit=1")
+      .then(r => r.json())
+      .then(data => {
+        const track = data.results[0];
+        if (track && track.previewUrl) {
+          audio.src = track.previewUrl;
         }
-        throw new Error('no preview found');
-      } catch(err) {
-        console.warn('Preview fetch failed:', err);
-        throw err;
-      }
-    }
+      });
 
-    async function loadAndPlayPreview(){
-      audioStatus.textContent = 'Loading preview…';
-      try {
-        const previewUrl = await fetchPreviewUrl();
-        audioEl.src = previewUrl;
-        audioEl.load();
-        // user clicked - allowed to play
-        await audioEl.play();
-        loadedPreview = true;
-        playBtn.textContent = '⏸ Pause';
-        audioStatus.textContent = 'Playing preview (30s).';
-      } catch(err) {
-        audioStatus.textContent = 'Preview unavailable — opening Spotify as fallback.';
-        // open spotify track in new tab (friendly fallback)
-        window.open('https://open.spotify.com/track/4K5mcIMVuPMo3i3nTGT9nP','_blank');
-      }
-    }
-
-    playBtn.addEventListener('click', async ()=>{
-      if(!loadedPreview && audioEl.paused){
-        await loadAndPlayPreview();
-        return;
-      }
-      // if already loaded, toggle play/pause
-      if(!audioEl.src){
-        // safety fallback if preview not loaded yet
-        await loadAndPlayPreview();
-        return;
-      }
-      if(audioEl.paused){
+    btn.addEventListener("click", async () => {
+      if (!audio.src) return;
+      if (!playing) {
         try {
-          await audioEl.play();
-          playBtn.textContent = '⏸ Pause';
-          audioStatus.textContent = 'Playing preview (30s).';
-        } catch(e){
-          audioStatus.textContent = 'Playback blocked — click to open Spotify preview.';
-        }
+          // start about 10 seconds in
+          audio.currentTime = 10;
+        } catch {}
+        await audio.play();
+        playing = true;
+        btn.textContent = "⏸ Pause Music";
       } else {
-        audioEl.pause();
-        playBtn.textContent = '▶️ Play Preview';
-        audioStatus.textContent = 'Paused.';
+        audio.pause();
+        playing = false;
+        btn.textContent = "▶️ Play “Don’t Stop the Party”";
       }
-    });
-
-    // image fallback logic: show fallback message if PNG doesn't load
-    function detectBackgroundImageLoaded(el) {
-      const bg = getComputedStyle(el).backgroundImage;
-      if(!bg || bg === 'none'){
-        const fallback = el.querySelector('.img-fallback');
-        if(fallback) fallback.style.display = 'grid';
-        return;
-      }
-      const m = bg.match(/url\\((?:')?(?:")?(.+?)(?:")?(?:')?\\)/);
-      if(!m){ return; }
-      const url = m[1].replace(/(^['"]|['"]$)/g,'');
-      const img = new Image();
-      img.onload = ()=> {
-        const fallback = el.querySelector('.img-fallback');
-        if(fallback) fallback.style.display = 'none';
-      };
-      img.onerror = ()=> {
-        const fallback = el.querySelector('.img-fallback');
-        if(fallback) fallback.style.display = 'grid';
-      };
-      img.src = url;
-    }
-
-    document.addEventListener('DOMContentLoaded', ()=>{
-      detectBackgroundImageLoaded(document.getElementById('aspencard'));
-      detectBackgroundImageLoaded(document.getElementById('cedarcard'));
     });
   </script>
 </body>
